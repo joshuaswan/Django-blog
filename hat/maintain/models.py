@@ -17,13 +17,13 @@ class TestCase(models.Model):
     host = models.CharField(max_length=50)
     port = models.IntegerField()
     path = models.CharField(max_length=200)
-    type_choice = (
+    method_choice = (
         (0, 'GET'),
         (1, 'POST'),
         (2, 'PUT'),
         (3, 'DELETE'),
     )
-    type = models.IntegerField(choices=type_choice, default=0)
+    method = models.IntegerField(choices=method_choice, default=0)
     version = models.CharField(max_length=40)
 
 
