@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>exec1</title>
+</head>
+<body>
+<div id="result">
+    <p>{{ result1 }}</p>
+    <p>{{ result2 }}</p>
+</div>
+</body>
+<script src="vue/vue.js"></script>
+<script>
+    var data = { a: 1}
+    var vm =  new Vue({
+        data : data
+    })
+
+    var result = new Vue({
+        el: '#result',
+        data: {result1: vm.a === data.a ,
+            result2: "test"}
+    })
+</script>
+</html>

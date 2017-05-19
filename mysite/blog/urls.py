@@ -2,5 +2,6 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
-    url(r'^$',views.archive,name='archive')
+    url(r'archive',views.archive,name='archive')
+
 ]

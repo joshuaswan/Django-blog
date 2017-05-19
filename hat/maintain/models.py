@@ -4,7 +4,7 @@ from django.db import models
 class NodeHierarchy(models.Model):
     node_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
-    details = models.CharField(max_length=200)
+    details = models.TextField()
     parent_id = models.IntegerField(null=True)
     input_code = models.CharField(max_length=20)
     node_order = models.IntegerField()

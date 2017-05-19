@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Request</title>
+</head>
+<body>
+<div id="list">
+    {{ gridData }}
+</div>
+</body>
+<script src="vue/vue.js"></script>
+<script src="vue/vue-resource.js"></script>
+<script>
+    var vGet = new Vue({
+        el: "#list",
+        data: {
+            gridData: "",
+        },
+        mounted: function () {
+            this.$nextTick(function () {
+                this.$http.get('http://localhost:8000/blog/archive').then(function (res) {
+                    console.log(res.data);
+                    this.gridData = res.data;
+                }).error(function (data, status, request) {
+                    console.log('fail' + status + "," + request);
+                })
+            })
+        },
+    })
+    var vPost = new Vue({
+        el: '#vPost',
+        data: {},
+        mounted: function () {
+            this.$nextTick(function () {
+                this.$http.post('http://localhost:8000/blog/postData',data).then(function (res) {
+                    console.log()
+                }).error(function (data, status, request) {
+
+                })
+            })
+        }
+    })
+</script>
+</html>
