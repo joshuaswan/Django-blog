@@ -32,9 +32,9 @@ def getAllTestCase(request):
 @csrf_exempt
 def createNode(request):
     node = request.body
-    print(node)
+    # print(node)
     jsonData = json.loads(node.decode('utf-8'))
-    print(models.NodeHierarchy(jsonData).__dict__)
-    # nodeH.save()
+    print(models.NodeHierarchy(**jsonData).__dict__)
+    models.NodeHierarchy(**jsonData).save()
     # models.NodeHierarchy.objects.create(nodeHierarchy)
     return HttpResponse('ok')
