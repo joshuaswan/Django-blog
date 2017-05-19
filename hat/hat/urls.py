@@ -21,4 +21,7 @@ urlpatterns = [
     url(r'^action/', include('action.urls')),
     url(r'^report/', include('report.urls')),
     url(r'^maintain/', include('maintain.urls')),
+
 ]
+
+# urlpatterns += staticfiles_urlpatterns()

@@ -13,7 +13,8 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+import django.views.static
+from django.conf.urls import url, include
 from django.contrib import admin
 
 from . import settings
@@ -24,17 +25,17 @@ urlpatterns = [
 ]
 
 urlpatterns += [
-    url(r'^media/(?P<path>.*)$', 'django.views.static.serve',
+    url(r'^media/(?P<path>.*)$', django.views.static.serve,
         {'document_root': settings.MEDIA_ROOT}
         ),
-    url(r'^$', 'simple.direct_to_template',
-        kwargs={
-            'template': 'index.html',
-            'extra_context': {'item_list': lambda: Item.objects.all()}
-        },
-        name='index'
-        ),
-    url(r'^items/$', 'list_detail.object_list',
+    # url(r'^$', include('simple.direct_to_template'),
+    #     kwargs={
+    #         'template': 'index.html',
+    #         'extra_context': {'item_list': lambda: Item.objects.all()}
+    #     },
+    #     name='index'
+    #     ),
+    url(r'^items/$', include('list_detail.object_list'),
         kwargs={
             'queryset': Item.objects.all(),
             'template_name': 'items_list.html',
@@ -42,14 +43,14 @@ urlpatterns += [
         },
         name='item_list'
         ),
-    url(r'^items/(?P<object_id>\d+)/$', 'list_detail.object_detail',
+    url(r'^items/(?P<object_id>\d+)/$', include('list_detail.object_detail'),
         kwargs={
             'queryset': Item.objects.all(),
             'template_name': 'items_detail.html'
         },
         name='item_detail'
         ),
-    url(r'^photos/(?P<object_id>\d+)/$', 'list_detail.object_detail',
+    url(r'^photos/(?P<object_id>\d+)/$', include('list_detail.object_detail'),
         kwargs={
             'queryset': Photo.objects.all(),
             'template_name': 'photos_detail.html'
