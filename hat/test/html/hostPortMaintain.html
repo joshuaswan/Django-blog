@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>主机维护</title>
+    <link rel="stylesheet" href="../bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="../bootstrap/css/bootstrap-responsive.css">
+    <script src="../vue/vue.js"></script>
+    <script src="../vue/vue-resource.js"></script>
+</head>
+<body>
+<div class="container" id="app">
+    <div class="page-header">
+        <h1>主机维护</h1>
+    </div>
+    <div>
+        <span>Search:</span>
+        <input name="query">
+        <button class="btn" style="float: right;margin-right: 89px;" v-on:click="saveHostPort">保存</button>
+    </div>
+    <div class="alert" style="margin-top: 10px;margin-bottom: 0px">
+        {{ saveStatus }}
+    </div>
+    <div>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>主机信息</th>
+                <th>主机描述</th>
+                <th>
+                    <button class="btn" v-on:click="newHostPort">新增</button>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="(item, index) in hostPorts">
+                <td>
+                    <input type="text" v-model="hostPorts[index].host_port">
+                </td>
+                <td>
+                    <input type="text" v-model="hostPorts[index].description">
+                </td>
+                <td>
+                    <button class="btn" v-on:click="deletehostPort(item)">删除</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+</body>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            hostPorts: [],
+            saveStatus: ""
+        },
+        methods: {
+            newHostPort: function () {
+                console.log("新增主机信息");
+                this.hostPorts.push({name: "", detail: ''});
+            },
+            deleteTestCase: function (e) {
+                console.log("删除主机信息");
+                console.log(e);
+                for (var i = 0; i < this.hostPorts.length; i++) {
+                    var hostPortTemp = this.hostPorts[i];
+                    console.log("hostPortTemp : " + hostPortTemp);
+                    if (hostPortTemp === e) {
+                        this.hostPorts.splice(i, 1)
+                    }
+                }
+            },
+            allHostPorts: function () {
+                this.$nextTick(function () {
+                    this.$http.get('http://localhost:8000/maintain/getHostPort').then(function (res) {
+                        console.log(res.data.length === 0)
+                        if (res.data.length === 0) {
+                            console.log("返回数据为空");
+                            this.hostPorts = [{host_port: '127.0.0.1:80', description: '本机'}]
+                            this.saveStatus = "获取0个主机信息，新增默认主机信息"
+                        } else {
+                            console.log("返回数据非空");
+                            for (result in res.data) {
+                                console.log(res.data[result].fields);
+                                hostPort = res.data[result].fields;
+                                this.hostPorts.push(res.data[result].fields)
+                            }
+                            this.saveStatus = "获取" + (parseInt(result) + 1) + "个主机信息"
+                            console.log(res.data);
+                        }
+                    })
+                })
+            },
+            saveHostPort: function () {
+                this.$nextTick(function () {
+                    console.log(this.hostPorts);
+                    this.$http.post('http://localhost:8000/maintain/saveHostPort', this.hostPorts).then(function (res) {
+                        console.log(res);
+                        this.saveStatus = "保存主机信息正常！"
+                    })
+                })
+            }
+        }
+    });
+    app.allHostPorts()
+</script>
+</html>

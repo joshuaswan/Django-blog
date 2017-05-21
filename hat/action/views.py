@@ -1,3 +1,32 @@
 from django.shortcuts import render
+from django.core import serializers
+import json
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 
-# Create your views here.
+from maintain import models
+
+
+@csrf_exempt
+def runTestCases(request):
+    testCases = request.body
+    print(testCases)
+    jsonData = json.loads(testCases.decode('utf-8'))
+    print(jsonData)
+    for one in jsonData:
+        print(one)
+        version = one["version"]
+        print(version)
+        version = models.Version(**version)
+        one['version'] = version
+        one['node_id'] = models.NodeHierarchy.objects.get(node_id=1)
+        runTestCase(models.TestCase(**one))
+    return HttpResponse('ok')
+
+
+def runTestCase(testCase):
+    print(testCase)
+    print("in the run ")
+    url = testCase.getUrl()
+    print(url)
+    return True

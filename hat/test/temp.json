@@ -1,0 +1,29 @@
+[
+  {
+    'detail': '描述',
+    'path': '/',
+    'method': 0,
+    'case_id': 1,
+    'host_port': '127.0.0.1:80',
+    'case_name': ' 用例名称',
+    'node_id': 1,
+    'version': {
+      'detail': '1',
+      'id': 2,
+      'name': '1'
+    }
+  },
+  {
+    'detail': 'hello',
+    'path': '/',
+    'name': '',
+    'host_port': '127.0.0.1:80',
+    'case_name': '第二个',
+    'version': {
+      'detail': '1',
+      'id': 2,
+      'name': '1'
+    },
+    'method': 0
+  }
+]

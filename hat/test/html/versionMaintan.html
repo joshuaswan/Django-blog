@@ -41,7 +41,7 @@
                     <input type="text" v-model="versions[index].detail">
                 </td>
                 <td>
-                    <button class="btn" v-on:click="deleteVersion">删除</button>
+                    <button class="btn" v-on:click="deleteVersion(item)">删除</button>
                 </td>
             </tr>
             </tbody>
@@ -63,16 +63,25 @@
                 console.log("新增版本信息");
                 this.versions.push({name: "", detail: ''});
             },
-            deleteVersion: function () {
+            deleteVersion: function (e) {
                 console.log("删除版本信息");
-                this.versions.pop();
+                console.log(e);
+                for (var i = 0; i < this.versions.length; i++) {
+                    var versionTemp = this.versions[i];
+                    console.log("versionTemp : " + versionTemp);
+                    if (versionTemp === e) {
+                        this.versions.splice(i, 1)
+                    }
+                }
             },
-            allVersion: function () {
+            allVersions: function () {
                 this.$nextTick(function () {
                     this.$http.get('http://localhost:8000/maintain/getVersion').then(function (res) {
-                        if (res.data === '') {
+                        console.log(res.data.length === 0)
+                        if (res.data.length === 0) {
                             console.log("返回数据为空");
                             this.versions = [{name: '1', detail: '1'}]
+                            this.saveStatus = "获取0个版本信息，新增默认版本信息"
                         } else {
                             console.log("返回数据非空");
                             for (result in res.data) {
@@ -98,6 +107,6 @@
             }
         }
     });
-    app.allVersion()
+    app.allVersions()
 </script>
 </html>

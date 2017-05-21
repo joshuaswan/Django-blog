@@ -23,12 +23,16 @@ class Version(models.Model):
     detail = models.TextField()
 
 
+class HostPort(models.Model):
+    host_port = models.CharField(max_length=50)
+    description = models.TextField()
+
+
 class TestCase(models.Model):
     case_id = models.AutoField(primary_key=True)
     node_id = models.ForeignKey(NodeHierarchy)
     case_name = models.CharField(max_length=100)
-    host = models.CharField(max_length=50)
-    port = models.IntegerField()
+    host_port = models.CharField(max_length=50)
     path = models.CharField(max_length=200)
     method_choice = (
         (0, 'GET'),
@@ -38,7 +42,10 @@ class TestCase(models.Model):
     )
     method = models.IntegerField(choices=method_choice, default=0)
     version = models.ForeignKey(Version)
+    detail = models.TextField()
 
+    def getUrl(self):
+        return self.host_port + self.path
 
 class Param(models.Model):
     param_id = models.AutoField(primary_key=True)
