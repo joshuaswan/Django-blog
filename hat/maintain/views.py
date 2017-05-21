@@ -38,3 +38,24 @@ def createNode(request):
     models.NodeHierarchy(**jsonData).save()
     # models.NodeHierarchy.objects.create(nodeHierarchy)
     return HttpResponse('ok')
+
+
+def getVersion(request):
+    print(request)
+    versions = models.Version.objects.all()
+    print(versions.__dict__)
+    print(serializers.serialize("json",versions))
+    return  HttpResponse(serializers.serialize("json",versions))
+
+
+@csrf_exempt
+def saveVersion(request):
+    versions = request.body
+    print(versions)
+    jsonData = json.loads(versions.decode('utf-8'))
+    print(jsonData)
+    models.Version.objects.all().delete()
+    for one in jsonData:
+        print(one)
+        models.Version(**one).save()
+    return HttpResponse('ok')

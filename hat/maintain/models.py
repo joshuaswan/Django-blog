@@ -8,6 +8,19 @@ class NodeHierarchy(models.Model):
     parent_id = models.IntegerField(null=True)
     input_code = models.CharField(max_length=20)
     node_order = models.IntegerField()
+    type_choice = {
+        (0, '根节点'),
+        (1, '子节点'),
+        (2, '叶子节点')
+    }
+    # 只有叶子节点下可以添加对应测试用例
+    node_type = models.IntegerField(choices=type_choice, default=0)
+
+
+class Version(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=30)
+    detail = models.TextField()
 
 
 class TestCase(models.Model):
@@ -24,7 +37,7 @@ class TestCase(models.Model):
         (3, 'DELETE'),
     )
     method = models.IntegerField(choices=method_choice, default=0)
-    version = models.CharField(max_length=40)
+    version = models.ForeignKey(Version)
 
 
 class Param(models.Model):

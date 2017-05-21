@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>版本维护</title>
+    <link rel="stylesheet" href="../bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="../bootstrap/css/bootstrap-responsive.css">
+    <script src="../vue/vue.js"></script>
+    <script src="../vue/vue-resource.js"></script>
+</head>
+<body>
+<div class="container" id="app">
+    <div class="page-header">
+        <h1>版本维护</h1>
+    </div>
+    <div>
+        <span>Search:</span>
+        <input name="query">
+        <button class="btn" style="float: right;margin-right: 89px;" v-on:click="saveVersion">保存</button>
+    </div>
+    <div class="alert" style="margin-top: 10px;margin-bottom: 0px">
+        {{ saveStatus }}
+    </div>
+    <div>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>版本名称</th>
+                <th>版本描述</th>
+                <th>
+                    <button class="btn" v-on:click="newVersion">新增</button>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="(item, index) in versions">
+                <td>
+                    <input type="text" v-model="versions[index].name">
+                </td>
+                <td>
+                    <input type="text" v-model="versions[index].detail">
+                </td>
+                <td>
+                    <button class="btn" v-on:click="deleteVersion">删除</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+</body>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            versions: [],
+            saveStatus: ""
+        },
+        methods: {
+            newVersion: function () {
+                console.log("新增版本信息");
+                this.versions.push({name: "", detail: ''});
+            },
+            deleteVersion: function () {
+                console.log("删除版本信息");
+                this.versions.pop();
+            },
+            allVersion: function () {
+                this.$nextTick(function () {
+                    this.$http.get('http://localhost:8000/maintain/getVersion').then(function (res) {
+                        if (res.data === '') {
+                            console.log("返回数据为空");
+                            this.versions = [{name: '1', detail: '1'}]
+                        } else {
+                            console.log("返回数据非空");
+                            for (result in res.data) {
+                                console.log(res.data[result].fields);
+                                version = res.data[result].fields;
+                                version.id = res.data[result].pk;
+                                this.versions.push(res.data[result].fields)
+                            }
+                            this.saveStatus = "获取" + (parseInt(result) + 1) + "个版本信息"
+                            console.log(res.data);
+                        }
+                    })
+                })
+            },
+            saveVersion: function () {
+                this.$nextTick(function () {
+                    console.log(this.versions);
+                    this.$http.post('http://localhost:8000/maintain/saveVersion', this.versions).then(function (res) {
+                        console.log(res);
+                        this.saveStatus = "保存版本信息正常！"
+                    })
+                })
+            }
+        }
+    });
+    app.allVersion()
+</script>
+</html>
