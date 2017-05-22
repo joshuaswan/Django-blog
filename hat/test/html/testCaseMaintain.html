@@ -15,6 +15,10 @@
         .input_path {
             width: 400px;
         }
+
+        .text-width {
+            width: 200px;
+        }
     </style>
 </head>
 <body>
@@ -62,7 +66,7 @@
                 <td class="input_width">
                     <select style="width: inherit" v-model="testCases[index].host_port">
                         <option v-for="host_port in host_ports" v-bind:value="host_port">
-                            {{ host_port.host_port }}
+                            {{ host_port.host_port }}:{{ host_port.description }}
                         </option>
                     </select>
                 </td>
@@ -83,8 +87,8 @@
                         </option>
                     </select>
                 </td>
-                <td class="input_width">
-                    <input style="width: inherit" type="text" v-model="testCases[index].expect_result">
+                <td class="text-width">
+                    <textarea style="width: inherit" type="text" v-model="testCases[index].expect_result"></textarea>
                 </td>
                 <td>
                     <button class="btn" v-on:click="deleteTestCase(item)">删除</button>
@@ -233,8 +237,8 @@
             }
         }
     });
-    app.initVersion();
     app.initHostPort();
+    app.initVersion();
     app.allTestCase();
 </script>
 </html>
