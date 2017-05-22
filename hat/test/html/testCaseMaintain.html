@@ -11,6 +11,9 @@
         .input_width {
             width: 80px;
         }
+        .input_path{
+            width: 400px;
+        }
     </style>
 </head>
 <body>
@@ -23,6 +26,7 @@
         <input name="query">
         <button class="btn" style="float: right;margin-right: 30px;" v-on:click="saveTestCase">保存</button>
         <button class="btn" style="float: right;margin-right: 5px" v-on:click="runTestCases">执行</button>
+        <input type="text" style="float: right; width: 100px; margin-right: 5px" v-model="execute">
     </div>
     <div class="alert" style="margin-top: 10px;margin-bottom: 0px">
         {{ saveStatus }}
@@ -36,7 +40,7 @@
                 <th>路径</th>
                 <th>方法</th>
                 <th>版本</th>
-                <th>描述</th>
+                <th>预期</th>
                 <th>
                     <button class="btn" v-on:click="newTestCase">新增</button>
                 </th>
@@ -44,31 +48,31 @@
             </thead>
             <tbody>
             <tr v-for="(item, index) in testCases">
-                <td>
-                    <input type="text" class="input_width" v-model="testCases[index].case_name">
+                <td  class="input_width">
+                    <input type="text" style="width: inherit" v-model="testCases[index].case_name">
                 </td>
-                <td>
-                    <input type="text" class="input_width" v-model="testCases[index].host_port">
+                <td class="input_width">
+                    <input type="text" v-model="testCases[index].host_port">
                 </td>
-                <td>
-                    <input type="text" class="input_width" v-model="testCases[index].path">
+                <td class="input_path">
+                    <input type="text" style="width: inherit"  v-model="testCases[index].path">
                 </td>
-                <td>
-                    <select class="input_width" v-model="testCases[index].method">
+                <td class="input_width">
+                    <select style="width: inherit" v-model="testCases[index].method">
                         <option v-for="method in methods" v-bind:value="method.value">
                             {{ method.text }}
                         </option>
                     </select>
                 </td>
-                <td>
-                    <select class="input_width" v-model="testCases[index].version">
+                <td class="input_width">
+                    <select style="width: inherit" v-model="testCases[index].version">
                         <option v-for="version in versions" v-bind:value="version">
                             {{ version.name }}
                         </option>
                     </select>
                 </td>
-                <td>
-                    <input type="text" class="input_width" v-model="testCases[index].detail">
+                <td class="input_width">
+                    <input style="width: inherit" type="text" v-model="testCases[index].expect_result">
                 </td>
                 <td>
                     <button class="btn" v-on:click="deleteTestCase(item)">删除</button>
@@ -93,7 +97,8 @@
                 {text: 'PUT', value: 2},
                 {text: 'DELETE', value: 3}
             ],
-            versions: []
+            versions: [],
+            execute:''
         },
         methods: {
             newTestCase: function () {
@@ -104,7 +109,7 @@
                     path: '/',
                     method: 0,
                     version: this.versions[0],
-                    detail: '描述',
+                    expect_result: '',
                 });
             },
             deleteTestCase: function (e) {
@@ -130,7 +135,7 @@
                                     path: '/',
                                     method: 0,
                                     version: this.versions[0],
-                                    detail: '描述',
+                                    expect_result: '',
                                 }
                             ];
                             this.saveStatus = "获取0个版本信息，新增默认测试用例"
@@ -139,6 +144,9 @@
                             for (result in res.data) {
                                 console.log(res.data[result].fields);
                                 testCase = res.data[result].fields;
+                                console.log(testCase.version)
+                                console.log(app.selectVersion(testCase.version))
+                                testCase.version = app.selectVersion(testCase.version)
                                 testCase.case_id = res.data[result].pk;
                                 this.testCases.push(res.data[result].fields)
                             }
@@ -147,6 +155,14 @@
                         }
                     })
                 })
+            },
+            selectVersion: function (index) {
+                console.log(this.versions[0])
+                for (version in this.versions) {
+                    if (this.versions[version].id === index)
+                        return this.versions[version];
+                }
+                return null;
             },
             saveTestCase: function () {
                 this.$nextTick(function () {
@@ -171,14 +187,14 @@
             },
             runTestCases: function () {
                 this.$nextTick(function () {
-                    this.$http.post('http://localhost:8000/action/runTestCases',this.testCases).then(function (res) {
+                    this.$http.post('http://localhost:8000/action/runTestCases', this.testCases).then(function (res) {
                         this.saveStatus = "执行测试用例正常！"
                     })
                 })
             }
         }
     });
-    app.allTestCase();
     app.initVersion()
+    app.allTestCase();
 </script>
 </html>

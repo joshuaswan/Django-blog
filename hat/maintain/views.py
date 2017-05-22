@@ -24,8 +24,6 @@ def getTestCase(request):
     print(serializers.serialize("json", testCases))
     return HttpResponse(serializers.serialize("json", testCases))
 
-    return HttpResponse("get test case")
-
 
 def getAllTestCase(request):
     node = models.NodeHierarchy.objects.all()

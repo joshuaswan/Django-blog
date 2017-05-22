@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from maintain import models
+from urllib import request
 
 
 @csrf_exempt
@@ -29,4 +30,7 @@ def runTestCase(testCase):
     print("in the run ")
     url = testCase.getUrl()
     print(url)
+    temp = request.Request(url)
+    response = request.urlopen(temp)
+    print(response.read())
     return True
