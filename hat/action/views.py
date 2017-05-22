@@ -20,6 +20,10 @@ def runTestCases(request):
         print(version)
         version = models.Version(**version)
         one['version'] = version
+        host_port = one["host_port"]
+        print(host_port)
+        host_port = models.HostPort(**host_port)
+        one['host_port'] = host_port
         one['node_id'] = models.NodeHierarchy.objects.get(node_id=1)
         runTestCase(models.TestCase(**one))
     return HttpResponse('ok')

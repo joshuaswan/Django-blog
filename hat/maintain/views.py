@@ -2,6 +2,7 @@
 import json
 
 from django.core import serializers
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.shortcuts import render
 
@@ -11,24 +12,12 @@ from django.views.decorators.csrf import csrf_exempt
 from maintain import models
 
 
-def createTestCase(request):
-    models.NodeHierarchy.objects.create(name='test', details='test', input_code='test', node_order=1)
-
-    return HttpResponse("createTestCase")
-
-
 def getTestCase(request):
     print(request)
     testCases = models.TestCase.objects.all()
     print(testCases.__dict__)
     print(serializers.serialize("json", testCases))
     return HttpResponse(serializers.serialize("json", testCases))
-
-
-def getAllTestCase(request):
-    node = models.NodeHierarchy.objects.all()
-
-    return HttpResponse("get all test case")
 
 
 @csrf_exempt
@@ -56,10 +45,17 @@ def saveVersion(request):
     print(versions)
     jsonData = json.loads(versions.decode('utf-8'))
     print(jsonData)
-    models.Version.objects.all().delete()
     for one in jsonData:
-        print(one)
-        models.Version(**one).save()
+        one = models.Version(**one)
+        try:
+            data = models.Version.objects.get(id=one.id)
+        except ObjectDoesNotExist:
+            one.save()
+        data = one
+        data.save()
+
+
+    # models.Version(**one).save()
     return HttpResponse('ok')
 
 
@@ -77,10 +73,14 @@ def saveHostPort(request):
     print(hostPorts)
     jsonData = json.loads(hostPorts.decode('utf-8'))
     print(jsonData)
-    models.HostPort.objects.all().delete()
     for one in jsonData:
-        print(one)
-        models.HostPort(**one).save()
+        one = models.HostPort(**one)
+        try:
+            data = models.HostPort.objects.get(id=one.id)
+        except ObjectDoesNotExist:
+            one.save()
+        data = one
+        data.save()
     return HttpResponse('ok')
 
 
@@ -94,9 +94,14 @@ def saveTestCase(request):
     for one in jsonData:
         print(one)
         version = one["version"]
+        host_port = one['host_port']
         print(version)
+        print(host_port)
         version = models.Version(**version)
+        host_port = models.HostPort(**host_port)
         one['version'] = version
+        one['host_port'] = host_port
         one['node_id'] = models.NodeHierarchy.objects.get(node_id=1)
+        print(one['host_port'])
         models.TestCase(**one).save()
     return HttpResponse('ok')

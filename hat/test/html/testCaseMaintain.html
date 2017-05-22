@@ -11,7 +11,8 @@
         .input_width {
             width: 80px;
         }
-        .input_path{
+
+        .input_path {
             width: 400px;
         }
     </style>
@@ -26,7 +27,8 @@
         <input name="query">
         <button class="btn" style="float: right;margin-right: 30px;" v-on:click="saveTestCase">保存</button>
         <button class="btn" style="float: right;margin-right: 5px" v-on:click="runTestCases">执行</button>
-        <input type="text" style="float: right; width: 100px; margin-right: 5px" v-model="execute">
+        <input type="text" style="float: right; width: 100px; margin-right: 5px" v-model="execute"
+               placeholder="请填写执行信息">
     </div>
     <div class="alert" style="margin-top: 10px;margin-bottom: 0px">
         {{ saveStatus }}
@@ -35,6 +37,9 @@
         <table class="table table-striped">
             <thead>
             <tr>
+                <th class="checkbox_td" style="width: 10px">
+                    <input type="checkbox" v-on:click="checkAll">
+                </th>
                 <th>测试用例</th>
                 <th>主机:端口</th>
                 <th>路径</th>
@@ -48,14 +53,21 @@
             </thead>
             <tbody>
             <tr v-for="(item, index) in testCases">
-                <td  class="input_width">
+                <td class="checkbox_td">
+                    <input type="checkbox" v-model="testCases[index].id">
+                </td>
+                <td class="input_width">
                     <input type="text" style="width: inherit" v-model="testCases[index].case_name">
                 </td>
                 <td class="input_width">
-                    <input type="text" v-model="testCases[index].host_port">
+                    <select style="width: inherit" v-model="testCases[index].host_port">
+                        <option v-for="host_port in host_ports" v-bind:value="host_port">
+                            {{ host_port.host_port }}
+                        </option>
+                    </select>
                 </td>
                 <td class="input_path">
-                    <input type="text" style="width: inherit"  v-model="testCases[index].path">
+                    <input type="text" style="width: inherit" v-model="testCases[index].path">
                 </td>
                 <td class="input_width">
                     <select style="width: inherit" v-model="testCases[index].method">
@@ -67,7 +79,7 @@
                 <td class="input_width">
                     <select style="width: inherit" v-model="testCases[index].version">
                         <option v-for="version in versions" v-bind:value="version">
-                            {{ version.name }}
+                            {{ version.name }}:{{ version.detail }}
                         </option>
                     </select>
                 </td>
@@ -98,28 +110,33 @@
                 {text: 'DELETE', value: 3}
             ],
             versions: [],
-            execute:''
+            host_ports: [],
+            execute: '',
+            checked: []
         },
         methods: {
             newTestCase: function () {
                 console.log("新增测试用例");
                 this.testCases.push({
                     case_name: '',
-                    host_port: '',
+                    host_port: this.host_ports[0],
                     path: '/',
                     method: 0,
                     version: this.versions[0],
                     expect_result: '',
                 });
             },
+            checkAll: function () {
+
+            },
             deleteTestCase: function (e) {
                 console.log("删除测试用例");
                 console.log(e);
                 for (var i = 0; i < this.testCases.length; i++) {
-                    var versionTemp = this.testCases[i];
-                    console.log("versionTemp : " + versionTemp);
-                    if (versionTemp === e) {
-                        this.versions.splice(i, 1)
+                    var test = this.testCases[i];
+                    console.log("versionTemp : " + test);
+                    if (test === e) {
+                        this.testCases.splice(i, 1)
                     }
                 }
             },
@@ -131,11 +148,11 @@
                             this.testCases = [
                                 {
                                     case_name: '用例名称',
-                                    host_port: '127.0.0.1:80',
+                                    host_port: this.host_ports[0],
                                     path: '/',
                                     method: 0,
                                     version: this.versions[0],
-                                    expect_result: '',
+                                    expect_result: ''
                                 }
                             ];
                             this.saveStatus = "获取0个版本信息，新增默认测试用例"
@@ -144,13 +161,15 @@
                             for (result in res.data) {
                                 console.log(res.data[result].fields);
                                 testCase = res.data[result].fields;
-                                console.log(testCase.version)
-                                console.log(app.selectVersion(testCase.version))
-                                testCase.version = app.selectVersion(testCase.version)
+                                console.log(testCase.version);
+                                console.log(app.selectVersion(testCase.version));
+                                testCase.version = app.selectVersion(testCase.version);
+                                console.log(app.selectHostPort(testCase.host_port));
+                                testCase.host_port = app.selectHostPort(testCase.host_port);
                                 testCase.case_id = res.data[result].pk;
                                 this.testCases.push(res.data[result].fields)
                             }
-                            this.saveStatus = "获取" + (parseInt(result) + 1) + "个测试用例！"
+                            this.saveStatus = "获取" + (parseInt(result) + 1) + "个测试用例！";
                             console.log(res.data);
                         }
                     })
@@ -185,6 +204,26 @@
                     })
                 })
             },
+            initHostPort: function () {
+                this.$nextTick(function () {
+                    this.$http.get('http://localhost:8000/maintain/getHostPort').then(function (res) {
+                        for (result in res.data) {
+                            console.log(res.data[result].fields);
+                            host_port = res.data[result].fields;
+                            host_port.id = res.data[result].pk;
+                            this.host_ports.push(res.data[result].fields)
+                        }
+                    })
+                })
+            },
+            selectHostPort: function (index) {
+                console.log(this.host_ports[0])
+                for (hp in this.host_ports) {
+                    if (this.host_ports[hp].id === index)
+                        return this.host_ports[hp];
+                }
+                return null;
+            },
             runTestCases: function () {
                 this.$nextTick(function () {
                     this.$http.post('http://localhost:8000/action/runTestCases', this.testCases).then(function (res) {
@@ -194,7 +233,8 @@
             }
         }
     });
-    app.initVersion()
+    app.initVersion();
+    app.initHostPort();
     app.allTestCase();
 </script>
 </html>

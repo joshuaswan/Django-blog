@@ -17,6 +17,8 @@
         <span>Search:</span>
         <input name="query">
         <button class="btn" style="float: right;margin-right: 89px;" v-on:click="saveVersion">保存</button>
+        <button class="btn" style="float: right;margin-right: 5px;" v-on:click="newVersion">新增</button>
+
     </div>
     <div class="alert" style="margin-top: 10px;margin-bottom: 0px">
         {{ saveStatus }}
@@ -27,9 +29,6 @@
             <tr>
                 <th>版本名称</th>
                 <th>版本描述</th>
-                <th>
-                    <button class="btn" v-on:click="newVersion">新增</button>
-                </th>
             </tr>
             </thead>
             <tbody>
@@ -39,9 +38,6 @@
                 </td>
                 <td>
                     <input type="text" v-model="versions[index].detail">
-                </td>
-                <td>
-                    <button class="btn" v-on:click="deleteVersion(item)">删除</button>
                 </td>
             </tr>
             </tbody>
@@ -62,17 +58,6 @@
             newVersion: function () {
                 console.log("新增版本信息");
                 this.versions.push({name: "", detail: ''});
-            },
-            deleteVersion: function (e) {
-                console.log("删除版本信息");
-                console.log(e);
-                for (var i = 0; i < this.versions.length; i++) {
-                    var versionTemp = this.versions[i];
-                    console.log("versionTemp : " + versionTemp);
-                    if (versionTemp === e) {
-                        this.versions.splice(i, 1)
-                    }
-                }
             },
             allVersions: function () {
                 this.$nextTick(function () {
