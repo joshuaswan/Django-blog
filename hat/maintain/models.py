@@ -47,13 +47,21 @@ class TestCase(models.Model):
         (3, 'DELETE'),
     )
     method = models.IntegerField(choices=method_choice, default=0)
+    json_data = models.TextField()
+    cookie = models.TextField()
     version = models.ForeignKey(Version)
-    expect_result = models.CharField(max_length=40)
+    expect_result = models.TextField()
 
     def getUrl(self):
         print(self.__dict__)
         print(self.host_port.__dict__)
         return "http://" + self.host_port.host_port + self.path
+
+    def getName(self):
+        return self.case_name
+    def getExpect(self):
+        return self.expect_result
+
 
 
 # class Param(models.Model):
@@ -72,8 +80,10 @@ class TestCase(models.Model):
 class Result(models.Model):
     result_id = models.AutoField(primary_key=True)
     case_id = models.ForeignKey(TestCase)
-    real_result = models.CharField(max_length=40)
+    case_name = models.CharField(max_length=100)
+    expect_result = models.TextField()
+    real_result = models.TextField()
     test_result = models.BooleanField()
-    execute_date = models.DateField()
+    execute_date = models.DateField(auto_now=True)
     execute_time = models.IntegerField()
     execute = models.CharField(max_length=30)

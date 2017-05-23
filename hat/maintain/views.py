@@ -90,7 +90,7 @@ def saveTestCase(request):
     print(testCases)
     jsonData = json.loads(testCases.decode('utf-8'))
     print(jsonData)
-    models.TestCase.objects.all().delete()
+    # models.TestCase.objects.all().delete()
     for one in jsonData:
         print(one)
         version = one["version"]
@@ -103,5 +103,12 @@ def saveTestCase(request):
         one['host_port'] = host_port
         one['node_id'] = models.NodeHierarchy.objects.get(node_id=1)
         print(one['host_port'])
-        models.TestCase(**one).save()
+        one = models.TestCase(**one)
+        try:
+            data = models.TestCase.objects.get(case_id=one.case_id)
+        except ObjectDoesNotExist:
+            one.save()
+        data = one
+        data.save()
+        # models.TestCase(**one).save()
     return HttpResponse('ok')

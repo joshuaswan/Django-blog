@@ -13,11 +13,11 @@
         }
 
         .input_path {
-            width: 400px;
+            width: 200px;
         }
 
         .text-width {
-            width: 200px;
+            width: 180px;
         }
     </style>
 </head>
@@ -47,6 +47,7 @@
                 <th>测试用例</th>
                 <th>主机:端口</th>
                 <th>路径</th>
+                <th>Json</th>
                 <th>方法</th>
                 <th>版本</th>
                 <th>预期</th>
@@ -61,7 +62,7 @@
                     <input type="checkbox" v-model="testCases[index].id">
                 </td>
                 <td class="input_width">
-                    <input type="text" style="width: inherit" v-model="testCases[index].case_name">
+                    <input onMouseOver="this.title=this.value"  type="text" style="width: inherit" v-model="testCases[index].case_name">
                 </td>
                 <td class="input_width">
                     <select style="width: inherit" v-model="testCases[index].host_port">
@@ -71,7 +72,10 @@
                     </select>
                 </td>
                 <td class="input_path">
-                    <input type="text" style="width: inherit" v-model="testCases[index].path">
+                    <input type="text" onMouseOver="this.title=this.value"  style="width: inherit" v-model="testCases[index].path">
+                </td>
+                <td  class="text-width">
+                    <textarea onMouseOver="this.title=this.value"  style="width: inherit" type="text" v-model="testCases[index].json_data"></textarea>
                 </td>
                 <td class="input_width">
                     <select style="width: inherit" v-model="testCases[index].method">
@@ -88,7 +92,7 @@
                     </select>
                 </td>
                 <td class="text-width">
-                    <textarea style="width: inherit" type="text" v-model="testCases[index].expect_result"></textarea>
+                    <textarea onMouseOver="this.title=this.value"  style="width: inherit" type="text" v-model="testCases[index].expect_result"></textarea>
                 </td>
                 <td>
                     <button class="btn" v-on:click="deleteTestCase(item)">删除</button>
@@ -101,7 +105,7 @@
 </div>
 
 </body>
-<script>
+    <script>
     var app = new Vue({
         el: '#app',
         data: {
@@ -156,7 +160,8 @@
                                     path: '/',
                                     method: 0,
                                     version: this.versions[0],
-                                    expect_result: ''
+                                    expect_result: '',
+                                    json_data:''
                                 }
                             ];
                             this.saveStatus = "获取0个版本信息，新增默认测试用例"
