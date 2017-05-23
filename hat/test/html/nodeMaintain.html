@@ -55,7 +55,7 @@
             createNode: function () {
                 console.log("createNode")
                 this.$nextTick(function () {
-                    this.$http.post('http://localhost:8000/maintain/createNode', this.node).then(function (res) {
+                    this.$http.post('/maintain/createNode', this.node).then(function (res) {
                         console.log(res)
                     }).error(function (data, status, request) {
                         

@@ -146,7 +146,7 @@
             },
             allTestCase: function () {
                 this.$nextTick(function () {
-                    this.$http.get('http://localhost:8000/maintain/getTestCase').then(function (res) {
+                    this.$http.get('/maintain/getTestCase').then(function (res) {
                         if (res.data.length === 0) {
                             console.log("返回数据为空");
                             this.testCases = [
@@ -190,7 +190,7 @@
             saveTestCase: function () {
                 this.$nextTick(function () {
                     console.log(this.versions);
-                    this.$http.post('http://localhost:8000/maintain/saveTestCase', this.testCases).then(function (res) {
+                    this.$http.post('/maintain/saveTestCase', this.testCases).then(function (res) {
                         console.log(res);
                         this.saveStatus = "保存测试用例正常！"
                     })
@@ -198,7 +198,7 @@
             },
             initVersion: function () {
                 this.$nextTick(function () {
-                    this.$http.get('http://localhost:8000/maintain/getVersion').then(function (res) {
+                    this.$http.get('/maintain/getVersion').then(function (res) {
                         for (result in res.data) {
                             console.log(res.data[result].fields);
                             version = res.data[result].fields;
@@ -210,7 +210,7 @@
             },
             initHostPort: function () {
                 this.$nextTick(function () {
-                    this.$http.get('http://localhost:8000/maintain/getHostPort').then(function (res) {
+                    this.$http.get('/maintain/getHostPort').then(function (res) {
                         for (result in res.data) {
                             console.log(res.data[result].fields);
                             host_port = res.data[result].fields;
@@ -230,7 +230,7 @@
             },
             runTestCases: function () {
                 this.$nextTick(function () {
-                    this.$http.post('http://localhost:8000/action/runTestCases', this.testCases).then(function (res) {
+                    this.$http.post('/action/runTestCases', this.testCases).then(function (res) {
                         this.saveStatus = "执行测试用例正常！"
                     })
                 })

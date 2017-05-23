@@ -61,7 +61,7 @@
             },
             allHostPorts: function () {
                 this.$nextTick(function () {
-                    this.$http.get('http://localhost:8000/maintain/getHostPort').then(function (res) {
+                    this.$http.get('/maintain/getHostPort').then(function (res) {
                         console.log(res.data.length === 0)
                         if (res.data.length === 0) {
                             console.log("返回数据为空");
@@ -84,7 +84,7 @@
             saveHostPort: function () {
                 this.$nextTick(function () {
                     console.log(this.hostPorts);
-                    this.$http.post('http://localhost:8000/maintain/saveHostPort', this.hostPorts).then(function (res) {
+                    this.$http.post('/maintain/saveHostPort', this.hostPorts).then(function (res) {
                         console.log(res);
                         this.saveStatus = "保存主机信息正常！"
                     })
