@@ -13,8 +13,17 @@ from maintain import models
 
 
 def getTestCase(request):
-    print(request)
-    testCases = models.TestCase.objects.all()
+    hostPort = request.GET.get('searchHostPort')
+    version = request.GET.get('searchVersion')
+    if hostPort == "0" and version == "0":
+        testCases = models.TestCase.objects.all()
+    elif hostPort != "0" :
+        testCases = models.TestCase.objects.filter(host_port=models.HostPort.objects.get(id=int(hostPort)))
+    elif version != "0":
+        testCases = models.TestCase.objects.filter(version=models.Version.objects.get(id=int(version)))
+    else:
+        testCases = models.TestCase.objects.filter(host_port=models.HostPort.objects.get(id=int(hostPort)),
+                                                   version=models.Version.objects.get(id=int(version)))
     print(testCases.__dict__)
     print(serializers.serialize("json", testCases))
     return HttpResponse(serializers.serialize("json", testCases))
@@ -53,7 +62,6 @@ def saveVersion(request):
             one.save()
         data = one
         data.save()
-
 
     # models.Version(**one).save()
     return HttpResponse('ok')

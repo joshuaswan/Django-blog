@@ -28,7 +28,17 @@
     </div>
     <div>
         <span>Search:</span>
-        <input name="query">
+        <select style="width: inherit;margin-bottom: 0px" v-model="searchHostPort">
+            <option v-for="host_port in host_ports" v-bind:value="host_port.id">
+                {{ host_port.host_port }}:{{ host_port.description }}
+            </option>
+        </select>
+        <select style="width: inherit;margin-bottom: 0px" v-model="searchVersion">
+            <option v-for="version in versions" v-bind:value="version.id">
+                {{ version.name }}:{{ version.detail }}
+            </option>
+        </select>
+        <button class="btn" style="margin-right: 30px;" v-on:click="getTestCase">查询</button>
         <button class="btn" style="float: right;margin-right: 30px;" v-on:click="saveTestCase">保存</button>
         <button class="btn" style="float: right;margin-right: 5px" v-on:click="runTestCases">执行</button>
         <input type="text" style="float: right; width: 100px; margin-right: 5px" v-model="execute"
@@ -62,7 +72,8 @@
                     <input type="checkbox" v-model="testCases[index].id">
                 </td>
                 <td class="input_width">
-                    <input onMouseOver="this.title=this.value"  type="text" style="width: inherit" v-model="testCases[index].case_name">
+                    <input onMouseOver="this.title=this.value" type="text" style="width: inherit"
+                           v-model="testCases[index].case_name">
                 </td>
                 <td class="input_width">
                     <select style="width: inherit" v-model="testCases[index].host_port">
@@ -72,10 +83,12 @@
                     </select>
                 </td>
                 <td class="input_path">
-                    <input type="text" onMouseOver="this.title=this.value"  style="width: inherit" v-model="testCases[index].path">
+                    <input type="text" onMouseOver="this.title=this.value" style="width: inherit"
+                           v-model="testCases[index].path">
                 </td>
-                <td  class="text-width">
-                    <textarea onMouseOver="this.title=this.value"  style="width: inherit" type="text" v-model="testCases[index].json_data"></textarea>
+                <td class="text-width">
+                    <textarea onMouseOver="this.title=this.value" style="width: inherit" type="text"
+                              v-model="testCases[index].json_data"></textarea>
                 </td>
                 <td class="input_width">
                     <select style="width: inherit" v-model="testCases[index].method">
@@ -92,7 +105,8 @@
                     </select>
                 </td>
                 <td class="text-width">
-                    <textarea onMouseOver="this.title=this.value"  style="width: inherit" type="text" v-model="testCases[index].expect_result"></textarea>
+                    <textarea onMouseOver="this.title=this.value" style="width: inherit" type="text"
+                              v-model="testCases[index].expect_result"></textarea>
                 </td>
                 <td>
                     <button class="btn" v-on:click="deleteTestCase(item)">删除</button>
@@ -105,7 +119,7 @@
 </div>
 
 </body>
-    <script>
+<script>
     var app = new Vue({
         el: '#app',
         data: {
@@ -120,7 +134,9 @@
             versions: [],
             host_ports: [],
             execute: '',
-            checked: []
+            checked: [],
+            searchHostPort: 0,
+            searchVersion: 0
         },
         methods: {
             newTestCase: function () {
@@ -148,9 +164,12 @@
                     }
                 }
             },
-            allTestCase: function () {
+            getTestCase: function () {
                 this.$nextTick(function () {
-                    this.$http.get('/maintain/getTestCase').then(function (res) {
+                    url = "/maintain/getTestCase/?";
+                    url += 'searchVersion=' + this.searchVersion;
+                    url += '&searchHostPort=' + this.searchHostPort;
+                    this.$http.get(url).then(function (res) {
                         if (res.data.length === 0) {
                             console.log("返回数据为空");
                             this.testCases = [
@@ -161,12 +180,13 @@
                                     method: 0,
                                     version: this.versions[0],
                                     expect_result: '',
-                                    json_data:''
+                                    json_data: ''
                                 }
                             ];
                             this.saveStatus = "获取0个版本信息，新增默认测试用例"
                         } else {
                             console.log("返回数据非空");
+                            this.testCases=[];
                             for (result in res.data) {
                                 console.log(res.data[result].fields);
                                 testCase = res.data[result].fields;
@@ -235,7 +255,7 @@
             },
             runTestCases: function () {
                 this.$nextTick(function () {
-                    this.$http.post('/action/runTestCases', this.testCases).then(function (res) {
+                    this.$http.post('/action/runTestCases/?execute=' + this.execute, this.testCases).then(function (res) {
                         this.saveStatus = "执行测试用例正常！"
                     })
                 })
@@ -244,6 +264,6 @@
     });
     app.initHostPort();
     app.initVersion();
-    app.allTestCase();
+    app.getTestCase();
 </script>
 </html>

@@ -84,6 +84,6 @@ class Result(models.Model):
     expect_result = models.TextField()
     real_result = models.TextField()
     test_result = models.BooleanField()
-    execute_date = models.DateField(auto_now=True)
+    execute_date = models.DateTimeField(auto_now=True)
     execute_time = models.IntegerField()
     execute = models.CharField(max_length=30)
