@@ -59,10 +59,24 @@ class TestCase(models.Model):
 
     def getName(self):
         return self.case_name
+
     def getExpect(self):
         return self.expect_result
 
+    def getPath(self):
+        return self.path
 
+    def getMethod(self):
+        return self.method
+
+    def getJsonData(self):
+        return self.json_data
+
+    def getHostPort(self):
+        return self.host_port
+
+    def getVersion(self):
+        return self.version
 
 # class Param(models.Model):
 #     param_id = models.AutoField(primary_key=True)
@@ -81,6 +95,17 @@ class Result(models.Model):
     result_id = models.AutoField(primary_key=True)
     case_id = models.ForeignKey(TestCase)
     case_name = models.CharField(max_length=100)
+    case_path = models.CharField(max_length=200)
+    method_choice = (
+        (0, 'GET'),
+        (1, 'POST'),
+        (2, 'PUT'),
+        (3, 'DELETE'),
+    )
+    case_method = models.IntegerField(choices=method_choice, default=0)
+    case_data = models.TextField(null=True)
+    host_port = models.ForeignKey(HostPort)
+    version = models.ForeignKey(Version)
     expect_result = models.TextField()
     real_result = models.TextField()
     test_result = models.BooleanField()

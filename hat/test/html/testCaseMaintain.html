@@ -29,11 +29,13 @@
     <div>
         <span>Search:</span>
         <select style="width: inherit;margin-bottom: 0px" v-model="searchHostPort">
+            <option value=0></option>
             <option v-for="host_port in host_ports" v-bind:value="host_port.id">
                 {{ host_port.host_port }}:{{ host_port.description }}
             </option>
         </select>
         <select style="width: inherit;margin-bottom: 0px" v-model="searchVersion">
+            <option value=0></option>
             <option v-for="version in versions" v-bind:value="version.id">
                 {{ version.name }}:{{ version.detail }}
             </option>
@@ -186,7 +188,7 @@
                             this.saveStatus = "获取0个版本信息，新增默认测试用例"
                         } else {
                             console.log("返回数据非空");
-                            this.testCases=[];
+                            this.testCases = [];
                             for (result in res.data) {
                                 console.log(res.data[result].fields);
                                 testCase = res.data[result].fields;
@@ -196,7 +198,7 @@
                                 console.log(app.selectHostPort(testCase.host_port));
                                 testCase.host_port = app.selectHostPort(testCase.host_port);
                                 testCase.case_id = res.data[result].pk;
-                                this.testCases.push(res.data[result].fields)
+                                this.testCases.push(testCase)
                             }
                             this.saveStatus = "获取" + (parseInt(result) + 1) + "个测试用例！";
                             console.log(res.data);
@@ -205,7 +207,9 @@
                 })
             },
             selectVersion: function (index) {
-                console.log(this.versions[0])
+                if (this.versions === []) {
+                    this.versions = app.initVersion();
+                }
                 for (version in this.versions) {
                     if (this.versions[version].id === index)
                         return this.versions[version];
@@ -230,6 +234,7 @@
                             version.id = res.data[result].pk;
                             this.versions.push(res.data[result].fields)
                         }
+                        return this.versions;
                     })
                 })
             },
@@ -242,11 +247,14 @@
                             host_port.id = res.data[result].pk;
                             this.host_ports.push(res.data[result].fields)
                         }
+                        return this.host_ports;
                     })
                 })
             },
             selectHostPort: function (index) {
-                console.log(this.host_ports[0])
+                if (this.host_ports === []) {
+                    this.host_ports = app.initHostPort();
+                }
                 for (hp in this.host_ports) {
                     if (this.host_ports[hp].id === index)
                         return this.host_ports[hp];

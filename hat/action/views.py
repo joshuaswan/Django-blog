@@ -54,13 +54,19 @@ def runGet(testCase, execute):
     try:
         response = request.urlopen(temp)
     except error.HTTPError:
-        result = models.Result(case_id=testCase, case_name=testCase.getName(), expect_result=testCase.getExpect(),
+        result = models.Result(case_id=testCase, case_name=testCase.getName(), case_path=testCase.getPath(),
+                               case_method=testCase.getMethod(), case_data=testCase.getJsonData(),
+                               host_port=testCase.getHostPort(),
+                               version=testCase.getVersion(), expect_result=testCase.getExpect(),
                                real_result="HTTPError", test_result=False, execute_time=time.time() - start_time,
                                execute=execute)
         result.save()
         return False
     except error.URLError:
-        result = models.Result(case_id=testCase, case_name=testCase.getName(), expect_result=testCase.getExpect(),
+        result = models.Result(case_id=testCase, case_name=testCase.getName(), case_path=testCase.getPath(),
+                               case_method=testCase.getMethod(), case_data=testCase.getJsonData(),
+                               host_port=testCase.getHostPort(),
+                               version=testCase.getVersion(), expect_result=testCase.getExpect(),
                                real_result="URLError", test_result=False, execute_time=time.time() - start_time,
                                execute=execute)
         result.save()
@@ -77,7 +83,10 @@ def runGet(testCase, execute):
         test_result = True
     else:
         test_result = False
-    result = models.Result(case_id=testCase, case_name=testCase.getName(), expect_result=testCase.getExpect(),
+    result = models.Result(case_id=testCase, case_name=testCase.getName(), case_path=testCase.getPath(),
+                           case_method=testCase.getMethod(), case_data=testCase.getJsonData(),
+                           host_port=testCase.getHostPort(),
+                           version=testCase.getVersion(), expect_result=testCase.getExpect(),
                            real_result=str(real), test_result=test_result, execute_time=execute_time,
                            execute=execute)
     result.save()

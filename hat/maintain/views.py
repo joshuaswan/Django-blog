@@ -17,10 +17,10 @@ def getTestCase(request):
     version = request.GET.get('searchVersion')
     if hostPort == "0" and version == "0":
         testCases = models.TestCase.objects.all()
-    elif hostPort != "0" :
+    elif hostPort == "0":
         testCases = models.TestCase.objects.filter(host_port=models.HostPort.objects.get(id=int(hostPort)))
-    elif version != "0":
-        testCases = models.TestCase.objects.filter(version=models.Version.objects.get(id=int(version)))
+    elif version == "0":
+        testCases = models.TestCase.objects.filter(host_port=models.HostPort.objects.get(id=int(hostPort)))
     else:
         testCases = models.TestCase.objects.filter(host_port=models.HostPort.objects.get(id=int(hostPort)),
                                                    version=models.Version.objects.get(id=int(version)))

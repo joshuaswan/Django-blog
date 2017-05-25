@@ -20,6 +20,10 @@
             margin-right: 2px;
             width: 100%;
         }
+
+        .success {
+            background-color: #00d500;
+        }
     </style>
 </head>
 <body>
@@ -29,9 +33,20 @@
     </div>
     <div>
         <span>Search:</span>
-        <input name="query">
-        <button class="btn" style="margin-right: 5px;" v-on:click="searchReport">查询</button>
-        <button class="btn" style="float: right;margin-right: 89px;" v-on:click="exportReport">导出</button>
+        <select style="width: inherit;margin-bottom: 0px" v-model="searchHostPort">
+            <option value=0></option>
+            <option v-for="host_port in host_ports" v-bind:value="host_port.id">
+                {{ host_port.host_port }}:{{ host_port.description }}
+            </option>
+        </select>
+        <select style="width: inherit;margin-bottom: 0px" v-model="searchVersion">
+            <option value=0></option>
+            <option v-for="version in versions" v-bind:value="version.id">
+                {{ version.name }}:{{ version.detail }}
+            </option>
+        </select>
+        <button class="btn" style="margin-right: 5px;" v-on:click="searchResult">查询</button>
+        <button class="btn" style="float: right;margin-right: 89px;" v-on:click="exportResult">导出</button>
     </div>
     <div class="alert" style="margin-top: 10px;margin-bottom: 0px">
         {{ saveStatus }}。执行成功率：{{ successPercent }}
@@ -46,31 +61,39 @@
                 <th class="th-width">实际结果</th>
                 <th class="th-width">执行时间</th>
                 <th class="th-width">执行耗时</th>
-                <th >状态</th>
+                <th>状态</th>
             </tr>
             </thead>
             <tbody>
             <tr v-for="(item, index) in results">
-                <td >
-                    <input class="show-input" onMouseOver="this.title=this.value" v-model="results[index].execute">
+                <td>
+                    <input class="show-input" readonly="readonly" onMouseOver="this.title=this.value"
+                           v-model="results[index].execute">
                 </td>
                 <td>
-                    <input class="show-input" onMouseOver="this.title=this.value" v-model="results[index].case_name">
+                    <input class="show-input" readonly="readonly" onMouseOver="this.title=this.value"
+                           v-model="results[index].case_name">
                 </td>
                 <td>
-                    <input class="show-input" onMouseOver="this.title=this.value" v-model="results[index].expect_result">
+                    <input class="show-input" readonly="readonly" onMouseOver="this.title=this.value"
+                           v-model="results[index].expect_result">
                 </td>
                 <td>
-                    <input class="show-input" onMouseOver="this.title=this.value" v-model="results[index].real_result">
+                    <input class="show-input" readonly="readonly" onMouseOver="this.title=this.value"
+                           v-model="results[index].real_result">
                 </td>
                 <td>
-                    <input class="show-input" onMouseOver="this.title=this.value" v-model="results[index].execute_data">
+                    <input class="show-input" readonly="readonly" onMouseOver="this.title=this.value"
+                           v-model="results[index].execute_data">
                 </td>
                 <td>
-                    <input class="show-input" onMouseOver="this.title=this.value" v-model="results[index].execute_time">
+                    <input class="show-input" readonly="readonly" onMouseOver="this.title=this.value"
+                           v-model="results[index].execute_time">
                 </td>
                 <td>
-                    <span>{{ results[index].test_result }}</span>
+                    <span class="label" v-bind:class="{success: results[index].test_result}">
+                        {{ results[index].test_result }}
+                    </span>
                 </td>
             </tr>
             </tbody>
@@ -82,23 +105,62 @@
     var app = new Vue({
         el: '#app',
         data: {
-            results: [
-                {
-                    case_name: "test",
-                    real_result: "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss"
-                }
-            ],
+            results: [],
             saveStatus: "测试报告界面",
-            successPercent: "100%"
+            successPercent: "100%",
+            versions: [],
+            host_ports: [],
+            searchHostPort: 0,
+            searchVersion: 0
         },
-        methods:{
-            exportReport: function () {
+        methods: {
+            exportResult: function () {
 
             },
-            searchReport: function () {
-
+            initVersion: function () {
+                this.$nextTick(function () {
+                    this.$http.get('/maintain/getVersion').then(function (res) {
+                        for (result in res.data) {
+                            console.log(res.data[result].fields);
+                            version = res.data[result].fields;
+                            version.id = res.data[result].pk;
+                            this.versions.push(res.data[result].fields)
+                        }
+                    })
+                })
+            },
+            initHostPort: function () {
+                this.$nextTick(function () {
+                    this.$http.get('/maintain/getHostPort').then(function (res) {
+                        for (result in res.data) {
+                            console.log(res.data[result].fields);
+                            host_port = res.data[result].fields;
+                            host_port.id = res.data[result].pk;
+                            this.host_ports.push(res.data[result].fields)
+                        }
+                    })
+                })
+            },
+            searchResult: function () {
+                this.$nextTick(function () {
+                    url = "/report/getResult/?";
+                    url += 'searchVersion=' + this.searchVersion;
+                    url += '&searchHostPort=' + this.searchHostPort;
+                    this.$http.get(url).then(function (res) {
+                        this.results = [];
+                        for (result in res.data) {
+                            temp = res.data[result].fields;
+                            this.results.push(res.data[result].fields);
+                        }
+                        this.saveStatus = "获取" + (parseInt(result) + 1) + "个测试用例！";
+                        console.log(this.results)
+                    })
+                })
             }
-        }
-    })
+        },
+    });
+    app.initHostPort();
+    app.initVersion();
+    app.searchResult()
 </script>
 </html>
