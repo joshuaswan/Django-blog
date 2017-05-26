@@ -45,11 +45,17 @@
                 {{ version.name }}:{{ version.detail }}
             </option>
         </select>
+        <select style="width: inherit;margin-bottom: 0px" v-model="execute">
+            <option value=0></option>
+            <option v-for="execute in executes" v-bind:value="execute.execute">
+                {{ execute.execute }}
+            </option>
+        </select>
         <button class="btn" style="margin-right: 5px;" v-on:click="searchResult">查询</button>
         <button class="btn" style="float: right;margin-right: 89px;" v-on:click="exportResult">导出</button>
     </div>
     <div class="alert" style="margin-top: 10px;margin-bottom: 0px">
-        {{ saveStatus }}。执行成功率：{{ successPercent }}
+        {{ saveStatus }}执行成功率： {{ rate }} %
     </div>
     <div>
         <table class="table table-striped">
@@ -107,11 +113,13 @@
         data: {
             results: [],
             saveStatus: "测试报告界面",
-            successPercent: "100%",
             versions: [],
             host_ports: [],
             searchHostPort: 0,
-            searchVersion: 0
+            searchVersion: 0,
+            executes: [],
+            execute: 0,
+            rate: 0
         },
         methods: {
             exportResult: function () {
@@ -146,6 +154,7 @@
                     url = "/report/getResult/?";
                     url += 'searchVersion=' + this.searchVersion;
                     url += '&searchHostPort=' + this.searchHostPort;
+                    url += '&execute=' + this.execute;
                     this.$http.get(url).then(function (res) {
                         this.results = [];
                         for (result in res.data) {
@@ -153,14 +162,39 @@
                             this.results.push(res.data[result].fields);
                         }
                         this.saveStatus = "获取" + (parseInt(result) + 1) + "个测试用例！";
+                        this.rate = app.computeRate(this.results);
                         console.log(this.results)
                     })
                 })
+            },
+            getExecute: function () {
+                this.$nextTick(function () {
+                    this.$http.get('/action/execute').then(function (res) {
+                        this.executes = [];
+                        for (execute in res.data) {
+                            temp = res.body[execute];
+                            this.executes.push(temp);
+                        }
+                        console.log(this.executes)
+                    })
+                })
+            },
+            computeRate: function (data) {
+                i=0;
+                sum=0;
+                for (one in data){
+                    if (data[one].test_result) {
+                        i++;
+                    }
+                    sum++;
+                }
+                return i/sum*100;
             }
         },
     });
     app.initHostPort();
     app.initVersion();
-    app.searchResult()
+    app.searchResult();
+    app.getExecute();
 </script>
 </html>

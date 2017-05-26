@@ -6,7 +6,7 @@ from django.core import serializers
 import json
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-
+import simplejson
 from maintain import models
 from urllib import request, error
 
@@ -92,3 +92,10 @@ def runGet(testCase, execute):
     result.save()
     print(response.read())
     return test_result
+
+
+def execute(request):
+    results = models.Result.objects.all().values("execute").distinct()
+    results = list(results)
+    print(simplejson.dumps(results))
+    return HttpResponse(simplejson.dumps(results))
