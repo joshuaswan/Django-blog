@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>节点分组</title>
+    <link rel="stylesheet" href="../bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="../bootstrap/css/bootstrap-responsive.css">
+    <script src="../vue/vue.js"></script>
+    <script src="../vue/vue-resource.js"></script>
+</head>
+<body>
+<div class="container">
+    <template>
+        <li>
+            <div @click='toggle'>
+                <i v-if='isFolder' class="fa " :class="[open?'fa-folder-open':'fa-folder']"></i>
+                <!--isFolder判断是否存在子级改变图标-->
+                <i v-if='!isFolder' class="fa fa-file-text"></i> {{ model.data.menuName }}
+            </div>
+            <ul v-show="open" v-if='isFolder'>
+                <items v-for='cel in model.childTreeNode' :model='cel'></items>
+            </ul>
+        </li>
+    </template>
+</div>
+</body>
+<script type="text/javascript">
+    export default {
+        name: 'items',
+        props: ['model'],
+        components: {},
+        model : data,
+        data() {
+            return {
+                open: false,
+                isFolder: true
+            }
+        },
+        computed: {
+            isFolder: function () {
+                return this.model.childTreeNode && this.model.childTreeNode.length
+            }
+        },
+        methods: {
+            toggle: function () {
+                if (this.isFolder) {
+                    this.open = !this.open
+                }
+            },
+        }
+    }
+    var data = [{
+        "id": "1",
+        "data": {
+            "menuName": "项目管理",
+            "menuCode": "",
+        },
+        "childTreeNode": [{
+            "data": {
+                "menuName": "项目",
+                "menuCode": "BusProject",
+            },
+            "childTreeNode": []
+        }, {
+            "data": {
+                "menuName": "我的任务",
+                "menuCode": "BusProject",
+            },
+            "childTreeNode": []
+        }, {
+            "data": {
+                "menuName": "人员周报",
+                "menuCode": "BusProject",
+            },
+            "childTreeNode": []
+        }]
+    }, {
+        "id": "2",
+        "data": {
+            "menuName": "数据统计",
+            "menuCode": "BusClock",
+        },
+        "childTreeNode": []
+    }, {
+        "id": "3",
+        "data": {
+            "menuName": "人事管理",
+            "menuCode": "",
+        },
+        "childTreeNode": []
+    }, {
+        "id": "4",
+        "data": {
+            "menuName": "基础管理",
+            "menuCode": "",
+        },
+        "childTreeNode": []
+    }]
+</script>
+</html>

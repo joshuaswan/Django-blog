@@ -9,28 +9,23 @@
     <script src="vue/vue.js"></script>
 </head>
 <body>
-<div class="header">
-
-</div>
-
 <div class="container">
     <div class="page-header">
         <h1>HAT接口测试系统</h1>
     </div>
-    <div class="navbar">
-        <ul class="nav">
-            <li><a href="html/hostPortMaintain.html" class="">主机端口维护</a></li>
-            <li><a href="html/versionMaintan.html">程序版本维护</a></li>
-            <li><a href="html/testCaseMaintain.html">测试用例维护与执行</a></li>
-            <li><a href="html/testReport.html">测试报告展示与导出</a></li>
-            <li><a href="html/nodeMaintain.html">测试用例分组维护</a></li>
+    <div>
+        <ul class="nav nav-tabs">
+            <li><a href="html/hostPortMaintain.html" target="myFrameName">主机端口维护</a></li>
+            <li><a href="html/versionMaintan.html" target="myFrameName">程序版本维护</a></li>
+            <li><a href="html/testCaseMaintain.html" target="myFrameName">测试用例维护与执行</a></li>
+            <li><a href="html/testReport.html" target="myFrameName">测试报告展示与导出</a></li>
+            <li><a href="html/nodeTree.html" target="myFrameName">测试用例分组维护</a></li>
         </ul>
     </div>
+    <div>
+    </div>
 </div>
-
-<div class="footer">
-
-</div>
+<iframe id="iframe" name="myFrameName" frameborder="0" style="width: 100%;height: 550px;"></iframe>
 
 </body>
 </html>
